@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <title>dial response demo</title>
+        <script src="jspsych-6.1.0/jspsych.js"></script>
+        <script src="jspsych-dial-response.js"></script>
+        <script src="jquery-3.5.1.js"></script>
+        <script src="jQuery-Knob-master/js/jquery.knob.js"></script> 
+        <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet">
+    </head>
+    <body></body>
+    <script>
+
+        // get a random starting value between the max and min values
+        var min_dial_val = 0;
+        var max_dial_val = 359;
+        var rand_starting_val = Math.round(min_dial_val + (Math.random() * max_dial_val));
+
+        // define a correct response (for feedback screen)
+        var correct_response = 90;
+
+        var dial_response = {
+            type: 'dial-response',
+            prompt: '<p>Please move the black line to indicate your response.</p>',
+            display_input: false, 
+            min: min_dial_val,
+            max: max_dial_val,
+            starting_value: rand_starting_val,
+            width: 300, 
+            height: 300,
+            cursor_mode: true, 
+            cursor_size: 1,
+            thickness: 1, 
+            gauge_color: "#222222",
+            background_color: "#ABB5BF",
+            show_next_button: false,
+            trial_duration: 5000,
+            correct_response: correct_response
+        };
+
+        var feedback = {
+            type: 'dial-response',
+            prompt: '<p>The correct response is shown in white.</p>',
+            display_input: false, 
+            min: min_dial_val,
+            max: max_dial_val,
+            starting_value: function() {
+                var last_response = jsPsych.data.getLastTrialData().values()[0].response;
+                return last_response;
+            },
+            cursor_size: 1,
+            width: 300, 
+            height: 300,
+            cursor_mode: true,
+            thickness: 1, 
+            gauge_color: "#222222",
+            background_color: "#ABB5BF",
+            show_next_button: false,
+            trial_duration: 5000,
+            read_only: true,
+            feedback: true,
+            correct_response: correct_response,
+            feedback_color: "white"
+        };
+
+        jsPsych.init({
+            timeline: [dial_response, feedback],
+            on_finish: function() {
+                jsPsych.data.displayData();
+            }
+        });
+
+    </script>
+</html>

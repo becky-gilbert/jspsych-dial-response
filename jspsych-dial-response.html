@@ -77,8 +77,27 @@
             require_movement: true
         };
 
+        // set the trial duration
+        var dial_response_time_limit = {
+            type: 'dial-response',
+            prompt: '<p>You have 2 seconds to make a response, then the trial will end.</p>',
+            display_input: false, 
+            min: 1,
+            max: 360,
+            starting_value: 90,
+            width: 300, 
+            height: 300,
+            cursor_mode: true, 
+            cursor_size: 1,
+            thickness: 1, 
+            gauge_color: "#222222",
+            background_color: "#ABB5BF",
+            show_next_button: false,
+            trial_duration: 5000
+        };
+
         jsPsych.init({
-            timeline: [dial_response_cursor, dial_response_gauge, dial_response_require_movement],
+            timeline: [dial_response_cursor, dial_response_gauge, dial_response_require_movement, dial_response_time_limit],
             on_finish: function() {
                 jsPsych.data.displayData();
             }

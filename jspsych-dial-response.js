@@ -166,6 +166,19 @@ jsPsych.plugins["dial-response"] = (function() {
         pretty_name: 'Feedback color',
         default: null,
         description: 'If feedback is true, this will be the color of the correct response value.'
+      },
+      allow_key_to_end_trial: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'Allow key to end trial',
+        default: false,
+        description: 'Whether or not to allow a keyboard key to end the trial.'
+      },
+      choices: {
+        type: jsPsych.plugins.parameterType.KEYCODE,
+        array: true,
+        pretty_name: 'Choices',
+        default: jsPsych.NO_KEYS,
+        description: 'The keys the subject is allowed to press to end the trial. If allow_key_to_end_trial is true, then you must specify one or more key choices.'
       }
     }
   }
@@ -277,6 +290,11 @@ jsPsych.plugins["dial-response"] = (function() {
 
         jsPsych.pluginAPI.clearAllTimeouts();
 
+        // kill keyboard listeners
+        if (typeof keyboardListener !== 'undefined') {
+          jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+        }
+
         var trial_data = {
             response: response.response,
             rt: response.rt,
@@ -291,6 +309,17 @@ jsPsych.plugins["dial-response"] = (function() {
     
         // end trial
         jsPsych.finishTrial(trial_data);
+    }
+
+    // start the keyboard listener
+    if ((trial.allow_key_to_end_trial == true) & (trial.choices != jsPsych.NO_KEYS)) {
+      var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+        callback_function: get_response,
+        valid_responses: trial.choices,
+        rt_method: 'performance',
+        persist: false,
+        allow_held_key: false
+      });
     }
 
     // end trial if trial_duration is set

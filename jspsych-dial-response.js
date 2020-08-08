@@ -166,7 +166,7 @@ jsPsych.plugins["dial-response"] = (function() {
         pretty_name: 'Feedback color',
         default: null,
         description: 'If feedback is true, this will be the color of the correct response value.'
-      },
+      }
     }
   }
 
@@ -225,7 +225,7 @@ jsPsych.plugins["dial-response"] = (function() {
         'inputColor':trial.input_color,
         'release': function(value) {
           if (trial.response_ends_trial) {
-            after_response(value)
+            get_response(value)
           }
         },
         'change': function(value) {
@@ -258,17 +258,19 @@ jsPsych.plugins["dial-response"] = (function() {
     }
 
     if (trial.show_next_button) {
-      display_element.querySelector('#jspsych-dial-response-next-btn').addEventListener('click', function() {
-        var current_val = display_element.querySelector('#jspsych-dial-response-response').value;
-        after_response(current_val);
-      });
+      display_element.querySelector('#jspsych-dial-response-next-btn').addEventListener('click', get_response);
     }
 
-    function after_response(value) {
-        end_time = performance.now();
-        response.response = value;
-        response.rt = end_time - start_time;
-        end_trial();
+    function get_response(val) {
+      var end_time = performance.now();
+      if (typeof val !== 'number') {
+        // if 'value' hasn't been passed into the function, then define the value variable
+        // and set its value to be the current dial value
+        var val = display_element.querySelector('#jspsych-dial-response-response').value;
+      }
+      response.response = val;
+      response.rt = end_time - start_time;
+      end_trial();
     }
 
     function end_trial() {
@@ -293,10 +295,7 @@ jsPsych.plugins["dial-response"] = (function() {
 
     // end trial if trial_duration is set
     if (trial.trial_duration !== null) {
-        jsPsych.pluginAPI.setTimeout(function() {
-            var current_val = display_element.querySelector('#jspsych-dial-response-response').value;
-            after_response(current_val);
-        }, trial.trial_duration);
+        jsPsych.pluginAPI.setTimeout(get_response, trial.trial_duration);
     }
   
     var start_time = performance.now();

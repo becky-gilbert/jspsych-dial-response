@@ -12,18 +12,41 @@
     <script>
 
         // pick a random starting value for the first 'cursor mode' trial
-        var min_dial_val = 1;
+        var min_dial_val = 0;
         var max_dial_val = 360;
-        var rand_starting_val = Math.round(min_dial_val + (Math.random() * max_dial_val));
+        var get_rand_starting_val = function() {
+            return Math.round(min_dial_val + (Math.random() * max_dial_val));
+        }
 
-        // cursor mode = true
-        var dial_response_cursor = {
+        // cursor mode = true, keypress to continue
+        var dial_response_key = {
+            type: 'dial-response',
+            prompt: '<p>Please move the cursor so that it is<br>pointing to NNE.</p><p>Press the Enter key when you are finished.</p>',
+            display_input: false, 
+            min: min_dial_val,
+            max: max_dial_val,
+            starting_value: get_rand_starting_val,
+            width: 400, 
+            height: 400,
+            cursor_mode: true, 
+            cursor_size: 10,
+            thickness: 0.15, 
+            gauge_color: 'blue',
+            background_color: 'gray', 
+            line_cap: 'butt',
+            show_next_button: false,
+            allow_key_to_end_trial: true,
+            choices: ['enter']
+        };
+
+        // cursor mode = true, next button to continue
+        var dial_response_next = {
             type: 'dial-response',
             prompt: '<p>Please move the green cursor so that it is positioned<br>where 7pm would be on a clock face.</p><p>Click the Next button when you are finished.</p>',
             display_input: false, 
             min: min_dial_val,
             max: max_dial_val,
-            starting_value: rand_starting_val,
+            starting_value: get_rand_starting_val,
             width: 300, 
             height: 300,
             cursor_mode: true, 
@@ -80,7 +103,7 @@
         // set the trial duration
         var dial_response_time_limit = {
             type: 'dial-response',
-            prompt: '<p>You have 2 seconds to make a response, then the trial will end.</p>',
+            prompt: '<p>You have 5 seconds to make a response, then the trial will end.</p>',
             display_input: false, 
             min: 1,
             max: 360,
@@ -97,7 +120,7 @@
         };
 
         jsPsych.init({
-            timeline: [dial_response_cursor, dial_response_gauge, dial_response_require_movement, dial_response_time_limit],
+            timeline: [dial_response_key, dial_response_next, dial_response_gauge, dial_response_require_movement, dial_response_time_limit],
             on_finish: function() {
                 jsPsych.data.displayData();
             }
